@@ -1,4 +1,4 @@
-package chat;
+package chat.other;
 
 import java.util.Date;
 import java.util.List;
@@ -16,14 +16,14 @@ public class Broadcaster {
         listeners.remove(listener);
     }
 
-    public static void broadcast(Date date, String nick, final String message) {
+    public static void broadcast(String date, String nick, final String message) {
         for (BroadcastListener listener : listeners) {
             listener.receiveBroadcast(message, date, nick);
         }
     }
 
     public interface BroadcastListener {
-        public void receiveBroadcast(String message, Date date, String nick);
+        public void receiveBroadcast(String date, String nick, String message);
     }
 
 }

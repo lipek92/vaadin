@@ -10,6 +10,8 @@ public class LoginPanelWindow extends Window {
     public LoginPanelWindow() {
         super("Podaj nick");
         loginForm = new LoginForm();
+        this.setClosable(false);
+        this.setModal(true);
         setContent(loginForm);
 
     }

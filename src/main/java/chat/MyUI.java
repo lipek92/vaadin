@@ -2,6 +2,8 @@ package chat;
 
 import javax.servlet.annotation.WebServlet;
 
+import chat.other.Broadcaster;
+import chat.other.Emoticons;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -15,30 +17,32 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import chat.windows.LoginPanelWindow;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  *
  */
-@Theme("mytheme")
+@Theme("valo")
 @Widgetset("chat.MyAppWidgetset")
 @Push
 public class MyUI extends UI implements Broadcaster.BroadcastListener {
 
     private final VerticalLayout layout = new VerticalLayout();
-    private VerticalLayout mainContent;
-    TextField nick = new TextField();
+    private final Panel messagesPanel = new Panel();
+
+    private Emoticons emoticons = new Emoticons();
+
+    TextField nick = new TextField("Nick");
 
     @Override
     protected void init(VaadinRequest request) {
 
-        mainContent = new VerticalLayout();
-        mainContent.setDefaultComponentAlignment(Alignment.TOP_CENTER);
         layout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
 
 
         boolean isLoggedIn = getCurrentSession().getAttribute("nickname") != null;
- //       System.out.println(getSession() +"lolol");
 
         if (!isLoggedIn)
         {
@@ -46,38 +50,52 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             getUI().addWindow(loginPanelWindow);
             setContent(null);
         } else {
-      //      System.out.println(String.valueOf(getCurrentSession().getAttribute("nickname")) + "weeeeeeeeeeeeee");
             nick.setValue(String.valueOf(getCurrentSession().getAttribute("nickname")));
             setContent(layout);
         }
 
 
         layout.setMargin(true);
-    //    setContent(layout);
-
-      //  String nickname = String.valueOf(getSession().getAttribute("nickname"));
-
-  //       nick = new TextField(String.valueOf(getCurrentSession().getAttribute("nickname")));
-
         layout.addComponent(nick);
 
+        nick.setEnabled(false);
 
-        final TextArea message = new TextArea("",
-                "Your message...");
+
+        final TextArea message = new TextArea("Wiadomość", "");
         layout.addComponent(message);
-        final Date date = new Date();
-        date.getTime();
-        final Button button = new Button("Send");
-        layout.addComponent(button);
-        button.addClickListener(new Button.ClickListener() {
+
+        final Button send = new Button("Wyślij");
+        layout.addComponent(send);
+        send.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                Broadcaster.broadcast(date,nick.getValue(), message.getValue());
+
+                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                Date date = new Date();
+                String dateString = (dateFormat.format(date));
+                String msg = emoticons.replaceEmots(message.getValue());
+
+                Broadcaster.broadcast(dateString, nick.getValue(), msg);
             }
         });
 
+        final Button logout = new Button("Wyloguj");
+        layout.addComponent(logout);
+        logout.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                getCurrentSession().setAttribute("nickname", null);
+
+                LoginPanelWindow loginPanelWindow = new LoginPanelWindow();
+                getUI().addWindow(loginPanelWindow);
+                setContent(null);
+            }
+        });
+
+
         // Register broadcast listener
         Broadcaster.register(this);
+
     }
 
     private void addComponent(Component c) {
@@ -91,11 +109,12 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
     }
 
     @Override
-    public void receiveBroadcast(final String message, final Date date, final String nick) {
+    public void receiveBroadcast(final String message, final String date, final String nick) {
         access(new Runnable() {
             @Override
             public void run() {
-                Label msg = new Label(date + "<b> "+nick+"</b> "+  message + "<img src=\"http://awesomemoticon.appspot.com/images/icon.png\">", ContentMode.HTML);
+                //Label msg = new Label(date + "<b> "+nick+"</b> "+  message + "<img src=\"http://awesomemoticon.appspot.com/images/icon.png\">", ContentMode.HTML);
+                Label msg = new Label(date + "<b> "+nick+"</b> "+  message, ContentMode.HTML);
                 addComponent(msg);
 
             }
