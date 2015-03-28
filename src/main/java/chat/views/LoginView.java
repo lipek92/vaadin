@@ -1,5 +1,7 @@
 package chat.views;
 
+import chat.bean.User;
+import chat.bean.UserManager;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.navigator.View;
@@ -8,8 +10,9 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.Reindeer;
 
-public class LoginView extends CustomComponent implements View,
-        Button.ClickListener {
+public class LoginView extends CustomComponent implements View, Button.ClickListener {
+
+    UserManager userManager = new UserManager();
 
     public static final String NAME = "login";
 
@@ -27,8 +30,8 @@ public class LoginView extends CustomComponent implements View,
         user.setWidth("300px");
         user.setRequired(true);
         user.setInputPrompt("Your username (eg. joe@email.com)");
-        user.addValidator(new EmailValidator(
-                "Username must be an email address"));
+ //       user.addValidator(new EmailValidator(
+ //               "Username must be an email address"));
         user.setInvalidAllowed(false);
 
         // Create the password input field
@@ -44,7 +47,7 @@ public class LoginView extends CustomComponent implements View,
 
         // Add both to a panel
         VerticalLayout fields = new VerticalLayout(user, password, loginButton);
-        fields.setCaption("Please login to access the application. (test@test.com/passw0rd)");
+        fields.setCaption("pPlease login to access the application. (test@test.com/passw0rd)");
         fields.setSpacing(true);
         fields.setMargin(new MarginInfo(true, true, true, false));
         fields.setSizeUndefined();
@@ -109,8 +112,25 @@ public class LoginView extends CustomComponent implements View,
         // Validate username and password with database here. For examples sake
         // I use a dummy username and password.
         //
-        boolean isValid = username.equals("test@test.com")
-                && password.equals("passw0rd");
+//        boolean isValid = username.equals("test@test.com")
+//                && password.equals("passw0rd");
+
+        boolean isValid = false;
+
+        User testowy = new User("test@test.pl", "passw0rd", "test@test.pl");
+        userManager.addUser(testowy);
+        userManager.addUser(new User("a@b.c", "passw1rd", "byleco"));
+
+        for (User u : userManager.getUsers())
+        {
+            if (username.equals(u.getLogin()) && password.equals(u.getPassword()))
+            {
+                System.out.println(u.getLogin());
+                System.out.println(username);
+
+                isValid = true;
+            }
+        }
 
         if (isValid) {
 
