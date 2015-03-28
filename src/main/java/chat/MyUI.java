@@ -8,6 +8,7 @@ import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
@@ -30,17 +31,18 @@ import java.util.Date;
 public class MyUI extends UI implements Broadcaster.BroadcastListener {
 
     private final VerticalLayout layout = new VerticalLayout();
-    private final Panel messagesPanel = new Panel();
+    private final VerticalLayout messagesPanel = new VerticalLayout();
+    private final HorizontalLayout header = new HorizontalLayout();
+    private final HorizontalLayout footer = new HorizontalLayout();
+
+    Label nick = new Label("");
 
     private Emoticons emoticons = new Emoticons();
-
-    TextField nick = new TextField("Nick");
 
     @Override
     protected void init(VaadinRequest request) {
 
         layout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
-
 
         boolean isLoggedIn = getCurrentSession().getAttribute("nickname") != null;
 
@@ -53,19 +55,33 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             nick.setValue(String.valueOf(getCurrentSession().getAttribute("nickname")));
             setContent(layout);
         }
-
-
         layout.setMargin(true);
-        layout.addComponent(nick);
 
-        nick.setEnabled(false);
+        Panel panel = new Panel("Chat");
+        panel.setWidth("800px");
+        panel.setHeight("500px");
+        messagesPanel.setMargin(true);
+        panel.setContent(messagesPanel);
+
+        header.setWidth("800px");
+        footer.setWidth("800px");
+
+        layout.addComponent(header);
+        layout.addComponent(panel);
+        layout.addComponent(footer);
 
 
-        final TextArea message = new TextArea("Wiadomość", "");
-        layout.addComponent(message);
+       // layout.addComponent(messagesPanel);
+        header.addComponent(nick);
+
+
+        final TextField message = new TextField("Wiadomość", "");
+        message.setWidth("600px");
+        footer.addComponent(message);
 
         final Button send = new Button("Wyślij");
-        layout.addComponent(send);
+        send.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+        footer.addComponent(send);
         send.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -80,7 +96,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
         });
 
         final Button logout = new Button("Wyloguj");
-        layout.addComponent(logout);
+        header.addComponent(logout);
         logout.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -92,6 +108,8 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             }
         });
 
+//        footer.addComponents(nick, message, send, logout);
+
 
         // Register broadcast listener
         Broadcaster.register(this);
@@ -99,7 +117,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
     }
 
     private void addComponent(Component c) {
-        layout.addComponent(c);
+        messagesPanel.addComponentAsFirst(c);
     }
 
     @Override
@@ -114,7 +132,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             @Override
             public void run() {
                 //Label msg = new Label(date + "<b> "+nick+"</b> "+  message + "<img src=\"http://awesomemoticon.appspot.com/images/icon.png\">", ContentMode.HTML);
-                Label msg = new Label(date + "<b> "+nick+"</b> "+  message, ContentMode.HTML);
+                Label msg = new Label("<i>"+date+ "</i> <b>"+nick+":</b> "+  message, ContentMode.HTML);
                 addComponent(msg);
 
             }

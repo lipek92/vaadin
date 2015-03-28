@@ -5,6 +5,7 @@ import chat.bean.User;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
 import chat.windows.LoginPanelWindow;
 
@@ -30,7 +31,8 @@ public class LoginForm extends CustomComponent {
         login = binder.buildAndBind("Nick:", "nickname", TextField.class);
         login.setNullRepresentation("");
 
-        Button enter = new Button("Wejście");
+        enter = new Button("Wejście");
+        enter.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         enter.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
