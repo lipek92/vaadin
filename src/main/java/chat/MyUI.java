@@ -81,6 +81,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
 
         final Button send = new Button("Wyślij");
         send.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+
         footer.addComponent(send);
         send.addClickListener(new Button.ClickListener() {
             @Override
@@ -92,6 +93,8 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
                 String msg = emoticons.replaceEmots(message.getValue());
 
                 Broadcaster.broadcast(dateString, nick.getValue(), msg);
+
+                message.setValue("");
             }
         });
 
@@ -107,8 +110,6 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
                 setContent(null);
             }
         });
-
-//        footer.addComponents(nick, message, send, logout);
 
 
         // Register broadcast listener
