@@ -33,4 +33,36 @@
   @include valo;
 
   // Insert your own theme rules here
+
+  .margin
+  {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .chatDate
+  {
+    font-size: 12px;
+  }
+  .chatNick
+  {
+    font-weight: bold;
+  }
+  .chatMsg
+  {
+    margin-left: 3px;
+  }
+  .chatInfo
+  {
+    font-style: italic;
+    font-size: 12px;
+  }
+//  .messages:nth-child(odd)
+//  {
+//    background-color:#EEE;
+//  }
+//  .messages:nth-child(even)
+//  {
+//    background-color:#FFFFFF;
+//  }
+
 }

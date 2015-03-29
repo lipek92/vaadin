@@ -12,6 +12,7 @@ public class LoginPanelWindow extends Window {
         loginForm = new LoginForm();
         this.setClosable(false);
         this.setModal(true);
+        this.setResizable(false);
         setContent(loginForm);
 
     }

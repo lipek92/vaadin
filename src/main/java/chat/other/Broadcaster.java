@@ -1,8 +1,9 @@
 package chat.other;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+// na podstawie https://vaadin.com/wiki/-/wiki/Main/Broadcasting+messages+to+other+users
 
 public class Broadcaster {
 

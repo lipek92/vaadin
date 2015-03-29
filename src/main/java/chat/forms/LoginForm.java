@@ -6,6 +6,7 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
 import chat.windows.LoginPanelWindow;
 
@@ -33,6 +34,7 @@ public class LoginForm extends CustomComponent {
         login.focus();
 
         enter = new Button("Wejście");
+        enter.setIcon(FontAwesome.SIGN_IN);
         enter.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         enter.addClickListener(new Button.ClickListener() {
             @Override

@@ -11,10 +11,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.WrappedSession;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
@@ -27,7 +24,7 @@ import java.util.Date;
 /**
  *
  */
-@Theme("valo")
+@Theme("mytheme")
 @Widgetset("chat.MyAppWidgetset")
 @Push
 public class MyUI extends UI implements Broadcaster.BroadcastListener {
@@ -35,7 +32,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
     private final VerticalLayout layout = new VerticalLayout();
     private final VerticalLayout messagesPanel = new VerticalLayout();
     private final HorizontalLayout header = new HorizontalLayout();
-    private final HorizontalLayout footer = new HorizontalLayout();
+    private final VerticalLayout footer = new VerticalLayout();
 
     Label nick = new Label("");
     final TextField message = new TextField("Wiadomość", "");
@@ -47,6 +44,8 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
     protected void init(VaadinRequest request) {
 
         layout.setDefaultComponentAlignment(Alignment.TOP_CENTER);
+        header.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+        header.setPrimaryStyleName("margin");
 
         boolean isLoggedIn = getCurrentSession().getAttribute("nickname") != null;
 
@@ -60,7 +59,6 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             setContent(layout);
             message.focus();
         }
-        layout.setMargin(true);
 
         Panel panel = new Panel("Chat");
         panel.setWidth("800px");
@@ -77,14 +75,14 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
         layout.addComponent(panel);
         layout.addComponent(footer);
 
-
-       // layout.addComponent(messagesPanel);
         header.addComponent(nick);
-        message.setWidth("600px");
+        message.setWidth("800px");
         message.focus();
+
         footer.addComponent(message);
 
         final Button send = new Button("Wyślij");
+        send.setWidth("800px");
         send.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
         footer.addComponent(send);
@@ -106,6 +104,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
                 }
             }
         });
+        send.setIcon(FontAwesome.SEND);
 
         final Button logout = new Button("Wyloguj");
         header.addComponent(logout);
@@ -120,6 +119,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
                 Broadcaster.broadcast("Uzytkownik "+nick.getValue()+" opuscil czat!");
             }
         });
+        logout.setIcon(FontAwesome.SIGN_OUT);
 
 
         // Register broadcast listener
@@ -136,7 +136,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
     {
         for (Message m: messagesBean.getMessages())
         {
-            Label msg = new Label("<i>"+ m.getDate() + "</i> <b>"+ m.getNick() +":</b> "+ m.getMessage(), ContentMode.HTML);
+            Label msg = new Label("<span class=\"chatDate\">"+ m.getDate() + "</span> <span class=\"chatNick\">"+ m.getNick() +"</span> <span class=\"chatMsg\">"+ m.getMessage()+ "</span>", ContentMode.HTML);
             messagesPanel.addComponentAsFirst(msg);
         }
     }
@@ -153,7 +153,8 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             @Override
             public void run() {
                 //Label msg = new Label(date + "<b> "+nick+"</b> "+  message + "<img src=\"http://awesomemoticon.appspot.com/images/icon.png\">", ContentMode.HTML);
-                Label msg = new Label("<i>"+date+ "</i> <b>"+nick+":</b> "+  message, ContentMode.HTML);
+  //              Label msg = new Label("<i>" + date + "</i> <b>" + nick + ":</b> " + message, ContentMode.HTML);
+                Label msg = new Label("<span class=\"chatDate\">"+ date + "</span> <span class=\"chatNick\">"+ nick +"</span> <span class=\"chatMsg\">"+ message+ "</span>", ContentMode.HTML);
                 addComponent(msg);
             }
         });
@@ -163,7 +164,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
         access(new Runnable() {
             @Override
             public void run() {
-                Label msg = new Label("<i>"+infoMessage+"</i>", ContentMode.HTML);
+                Label msg = new Label("<span class=\"chatInfo\">"+infoMessage+"</span>", ContentMode.HTML);
                 addComponent(msg);
             }
         });
