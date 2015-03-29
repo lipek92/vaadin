@@ -30,6 +30,7 @@ public class LoginForm extends CustomComponent {
 
         login = binder.buildAndBind("Nick:", "nickname", TextField.class);
         login.setNullRepresentation("");
+        login.focus();
 
         enter = new Button("Wejście");
         enter.setClickShortcut(ShortcutAction.KeyCode.ENTER);

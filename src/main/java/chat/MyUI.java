@@ -38,6 +38,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
     private final HorizontalLayout footer = new HorizontalLayout();
 
     Label nick = new Label("");
+    final TextField message = new TextField("Wiadomość", "");
 
     private Emoticons emoticons = new Emoticons();
     static private Messages messagesBean = new Messages();
@@ -57,6 +58,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
         } else {
             nick.setValue(String.valueOf(getCurrentSession().getAttribute("nickname")));
             setContent(layout);
+            message.focus();
         }
         layout.setMargin(true);
 
@@ -78,10 +80,8 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
 
        // layout.addComponent(messagesPanel);
         header.addComponent(nick);
-
-
-        final TextField message = new TextField("Wiadomość", "");
         message.setWidth("600px");
+        message.focus();
         footer.addComponent(message);
 
         final Button send = new Button("Wyślij");
@@ -92,16 +92,18 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             @Override
             public void buttonClick(ClickEvent event) {
 
-                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                Date date = new Date();
-                String dateString = (dateFormat.format(date));
-                String msg = emoticons.replaceEmots(message.getValue());
+                if (!message.isEmpty()) {
+                    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                    Date date = new Date();
+                    String dateString = (dateFormat.format(date));
+                    String msg = emoticons.replaceEmots(message.getValue());
 
-                Broadcaster.broadcast(dateString, nick.getValue(), msg);
+                    Broadcaster.broadcast(dateString, nick.getValue(), msg);
 
-                messagesBean.addMessage(new Message(dateString, nick.getValue(), msg));
+                    messagesBean.addMessage(new Message(dateString, nick.getValue(), msg));
 
-                message.setValue("");
+                    message.setValue("");
+                }
             }
         });
 
@@ -115,6 +117,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
                 LoginPanelWindow loginPanelWindow = new LoginPanelWindow();
                 getUI().addWindow(loginPanelWindow);
                 setContent(null);
+                Broadcaster.broadcast("Uzytkownik "+nick.getValue()+" opuscil czat!");
             }
         });
 
@@ -155,6 +158,16 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
             }
         });
     }
+    @Override
+    public void receiveBroadcast(final String infoMessage) {
+        access(new Runnable() {
+            @Override
+            public void run() {
+                Label msg = new Label("<i>"+infoMessage+"</i>", ContentMode.HTML);
+                addComponent(msg);
+            }
+        });
+    }
 
     public static WrappedSession getCurrentSession(){
         return VaadinService.getCurrentRequest().getWrappedSession();
@@ -162,8 +175,9 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
 
     public void setChatContent(){
         nick.setValue(String.valueOf(getCurrentSession().getAttribute("nickname")));
-  //      Broadcaster.broadcast("test", "test", nick.getValue() + "wszedł na czat!");
+        Broadcaster.broadcast("Uzytkownik "+nick.getValue()+" wszedl na czat!");
         setContent(layout);
+        message.focus();
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)

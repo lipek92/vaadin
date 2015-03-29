@@ -1,10 +1,7 @@
 package chat.bean;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 public class Message {
     private String date;
-    @NotEmpty
     private String nick;
     private String message;
 

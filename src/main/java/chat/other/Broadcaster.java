@@ -22,8 +22,15 @@ public class Broadcaster {
         }
     }
 
+    public static void broadcast(String infoMessage) {
+        for (BroadcastListener listener : listeners) {
+            listener.receiveBroadcast(infoMessage);
+        }
+    }
+
     public interface BroadcastListener {
         public void receiveBroadcast(String date, String nick, String message);
+        public void receiveBroadcast(String infoMessage);
     }
 
 }
