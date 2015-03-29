@@ -2,6 +2,8 @@ package chat;
 
 import javax.servlet.annotation.WebServlet;
 
+import chat.bean.Message;
+import chat.bean.Messages;
 import chat.other.Broadcaster;
 import chat.other.Emoticons;
 import com.vaadin.annotations.Push;
@@ -38,6 +40,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
     Label nick = new Label("");
 
     private Emoticons emoticons = new Emoticons();
+    static private Messages messagesBean = new Messages();
 
     @Override
     protected void init(VaadinRequest request) {
@@ -62,6 +65,8 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
         panel.setHeight("500px");
         messagesPanel.setMargin(true);
         panel.setContent(messagesPanel);
+
+        addMessagesFromList();
 
         header.setWidth("800px");
         footer.setWidth("800px");
@@ -94,6 +99,8 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
 
                 Broadcaster.broadcast(dateString, nick.getValue(), msg);
 
+                messagesBean.addMessage(new Message(dateString, nick.getValue(), msg));
+
                 message.setValue("");
             }
         });
@@ -115,10 +122,20 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
         // Register broadcast listener
         Broadcaster.register(this);
 
+
     }
 
     private void addComponent(Component c) {
         messagesPanel.addComponentAsFirst(c);
+    }
+
+    private void addMessagesFromList()
+    {
+        for (Message m: messagesBean.getMessages())
+        {
+            Label msg = new Label("<i>"+ m.getDate() + "</i> <b>"+ m.getNick() +":</b> "+ m.getMessage(), ContentMode.HTML);
+            messagesPanel.addComponentAsFirst(msg);
+        }
     }
 
     @Override
@@ -135,7 +152,6 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
                 //Label msg = new Label(date + "<b> "+nick+"</b> "+  message + "<img src=\"http://awesomemoticon.appspot.com/images/icon.png\">", ContentMode.HTML);
                 Label msg = new Label("<i>"+date+ "</i> <b>"+nick+":</b> "+  message, ContentMode.HTML);
                 addComponent(msg);
-
             }
         });
     }
@@ -146,6 +162,7 @@ public class MyUI extends UI implements Broadcaster.BroadcastListener {
 
     public void setChatContent(){
         nick.setValue(String.valueOf(getCurrentSession().getAttribute("nickname")));
+  //      Broadcaster.broadcast("test", "test", nick.getValue() + "wszedł na czat!");
         setContent(layout);
     }
 
